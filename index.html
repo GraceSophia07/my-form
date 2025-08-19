@@ -1,39 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Course Details Form</title>
+
   <style>
-    /* Hide Jotform footer branding */
-    .jf-branding-footer,
-    div[role="banner"] {
-      display: none !important;
+    :root {
+      --bg: #eef1f6;
+      --card: #ffffff;
+      --accent: #1f4cbf;
+      --accent-2: #2340a1;
+      --text: #0f172a;
+      --muted: #475569;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
     }
-  </style>
-<head>
-  <meta charset="UTF-8">
-  <title>Course Details Form</title>
-  <style>
-    /* Hide Jotform branding footer */
-    iframe {
-      height: 100vh; /* full height */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: var(--bg);
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 48px auto;
+      padding: 0 20px 40px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    header img {
+      width: 42px; height: 42px; object-fit: contain;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(20px, 3.2vw, 28px);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 22px 26px;
+      font-size: clamp(18px, 2.8vw, 24px);
+      border-bottom: 1px solid #eaeef4;
+      background: #f7f9ff;
+      color: var(--accent-2);
+      text-align: center;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+    form {
+      padding: 22px 24px 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px 18px;
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    label {
+      font-weight: 600;
+      color: var(--muted);
+      padding-top: 8px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      background: #fff;
+      transition: box-shadow .18s ease, border-color .18s ease;
+    }
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(31,76,191,.12);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 18px 24px 24px;
+      border-top: 1px solid #eef2f7;
+    }
+    button {
+      appearance: none;
       border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
     }
-    .supernova, .jf-branding {
-      display: none !important;
-      visibility: hidden !important;
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(31,76,191,.25);
+    }
+    .btn-primary:hover { background: #1a43a7; }
+    .btn-secondary {
+      background: #eef2ff;
+      color: var(--accent-2);
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #55627a;
+      text-align: center;
+    }
+
+    .success {
+      display: none;
+      margin-top: 18px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
-  <h2>Course Details Form</h2>
-  <iframe
-    src="https://form.jotform.com/kiifcon/course-details"
-    width="100%"
-    height="800"
-    frameborder="0"
-    allowfullscreen
-  ></iframe>
+  <div class="wrap">
+    <header>
+      <!-- Optional logo (replace src or remove img) -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Logo" />
+      <h1>Course Details Form</h1>
+    </header>
+
+    <div class="card">
+      <h2>Course Details</h2>
+
+      <!-- PURE HTML FORM (no Jotform, no ads) -->
+      <!-- Default behavior: downloads a CSV row locally so you never lose a submission -->
+      <!-- If you want server collection, see Formspree instructions below. -->
+      <form id="course-form" novalidate>
+        <div class="grid">
+          <label for="institution">Institution Name <span style="color:#dc2626">*</span></label>
+          <input id="institution" name="Institution Name" type="text" required placeholder="eg. ABC Institute" />
+
+          <label for="address">Registered Address <span style="color:#dc2626">*</span></label>
+          <textarea id="address" name="Registered Address" required placeholder="Street, City, State, PIN"></textarea>
+
+          <label for="affiliation">Affiliation / Accredited By</label>
+          <input id="affiliation" name="Affiliation / Accredited By" type="text" placeholder="eg. AICTE / UGC / University" />
+        </div>
+
+        <div class="actions">
+          <button type="reset" class="btn-secondary">Clear</button>
+          <button type="submit" class="btn-primary">Submit</button>
+        </div>
+
+        <div id="ok" class="success">Saved! Your entry has been downloaded as CSV.</div>
+      </form>
+    </div>
+
+    <p class="note">
+      Tip: You can connect this form to a free endpoint (Formspree) to collect entries automatically—see notes inside the file.
+    </p>
+  </div>
+
+  <script>
+    // --- Local CSV download fallback (works on GitHub Pages) ---
+    const form = document.getElementById('course-form');
+    const ok = document.getElementById('ok');
+
+    function sanitizeCsv(value) {
+      if (value == null) return "";
+      // Escape quotes for CSV
+      const v = String(value).replace(/"/g, '""');
+      // Wrap in quotes in case of commas/newlines
+      return `"${v}"`;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Basic validation
+      const institution = document.getElementById('institution');
+      const address = document.getElementById('address');
+      if (!institution.value.trim() || !address.value.trim()) {
+        alert('Please fill the required fields.');
+        return;
+      }
+
+      // Collect values
+      const data = {
+        "Timestamp": new Date().toISOString(),
+        "Institution Name": institution.value.trim(),
+        "Registered Address": address.value.trim(),
+        "Affiliation / Accredited By": document.getElementById('affiliation').value.trim()
+      };
+
+      // Create (or append) CSV content
+      const headers = Object.keys(data);
+      const row = headers.map(h => sanitizeCsv(data[h])).join(',');
+
+      // Download a one-row CSV named submissions.csv
+      const csv = headers.join(',') + '\n' + row + '\n';
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'submission.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      ok.style.display = 'block';
+      form.reset();
+      setTimeout(() => (ok.style.display = 'none'), 4000);
+    });
+
+    /*
+     * --- OPTIONAL: Send to Formspree (replace the local CSV flow) ---
+     *
+     * 1) Go to https://formspree.io, create a free form, copy your endpoint, e.g.:
+     *    https://formspree.io/f/xyzabcd
+     * 2) Replace YOUR_FORMSPREE_ENDPOINT below.
+     * 3) Uncomment the block and comment out the CSV block above if you prefer server collection.
+     *
+     * form.addEventListener('submit', async (e) => {
+     *   e.preventDefault();
+     *   const institution = document.getElementById('institution');
+     *   const address = document.getElementById('address');
+     *   if (!institution.value.trim() || !address.value.trim()) { alert('Please fill the required fields.'); return; }
+     *
+     *   const payload = {
+     *     timestamp: new Date().toISOString(),
+     *     institution: institution.value.trim(),
+     *     address: address.value.trim(),
+     *     affiliation: document.getElementById('affiliation').value.trim()
+     *   };
+     *
+     *   const resp = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT', {
+     *     method: 'POST',
+     *     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+     *     body: JSON.stringify(payload)
+     *   });
+     *   if (resp.ok) { ok.style.display='block'; form.reset(); setTimeout(()=>ok.style.display='none', 4000); }
+     *   else { alert('Submission failed. Please try again.'); }
+     * });
+     */
+  </script>
 </body>
 </html>
