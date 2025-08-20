@@ -3,38 +3,51 @@
 <head>
   <title>Institute Course Entry Form</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
     label { display: block; margin-top: 12px; }
-    input, textarea { width: 100%; padding: 8px; margin-top: 4px; }
-    button { margin-top: 16px; padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; }
+    input { width: 100%; padding: 8px; margin-top: 4px; }
+    table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+    button { margin-top: 12px; padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; }
     button:hover { background: #0056b3; }
     p#response { margin-top: 16px; font-weight: bold; }
   </style>
 </head>
 <body>
   <h2>Institute Course Entry Form</h2>
+
   <form id="courseForm">
-    <label>Course / Specialization:
-      <input type="text" name="course" required>
-    </label>
-    <label>Duration:
-      <input type="text" name="duration" required>
-    </label>
-    <label>Number of Seats:
-      <input type="number" name="seats" required>
-    </label>
-    <label>Number of Students Enrolled (Current Academic Year):
-      <input type="number" name="enrolled_current" required>
-    </label>
-    <label>Number of Students Enrolled (Previous Academic Year):
-      <input type="number" name="enrolled_previous" required>
-    </label>
-    <label>Number of Students Placed (Previous Academic Year):
-      <input type="number" name="placed_previous" required>
-    </label>
-    <label>Email (for confirmation):
-      <input type="email" name="email" required>
-    </label>
+    <!-- Institute Details -->
+    <label>Name of Institute: <input type="text" name="institute_name" required></label>
+    <label>Registered Address: <input type="text" name="registered_address" required></label>
+    <label>Affiliation / Accreditation: <input type="text" name="affiliation" required></label>
+
+    <!-- Faculty Details -->
+    <label>Faculty Name: <input type="text" name="faculty_name" required></label>
+    <label>Faculty Contact Number: <input type="text" name="faculty_contact" required></label>
+    <label>Faculty Email ID: <input type="email" name="faculty_email" required></label>
+
+    <h3>Courses Offered</h3>
+    <table id="coursesTable">
+      <tr>
+        <th>Course / Specialization</th>
+        <th>Seats</th>
+        <th>Enrolled (Current Year)</th>
+        <th>Enrolled (Previous Year)</th>
+        <th>Placed (Previous Year)</th>
+        <th>Remove</th>
+      </tr>
+      <tr>
+        <td><input type="text" name="course_0" required></td>
+        <td><input type="number" name="seats_0" required></td>
+        <td><input type="number" name="enrolled_current_0" required></td>
+        <td><input type="number" name="enrolled_previous_0" required></td>
+        <td><input type="number" name="placed_previous_0" required></td>
+        <td><button type="button" class="removeRow">Remove</button></td>
+      </tr>
+    </table>
+    <button type="button" id="addCourse">Add Course</button>
+    <br><br>
     <button type="submit">Submit</button>
   </form>
 
@@ -42,16 +55,64 @@
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbx__c7Cnn_9rGaR54byCPDT5YaeMzPUoEb-pD9sn_N2UxcemPgY6gyviYuOjZtmc2Y/exec";
+    let courseIndex = 1; // First row is index 0
 
+    // Add new course row
+    document.getElementById("addCourse").addEventListener("click", function() {
+      const table = document.getElementById("coursesTable");
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td><input type="text" name="course_${courseIndex}" required></td>
+        <td><input type="number" name="seats_${courseIndex}" required></td>
+        <td><input type="number" name="enrolled_current_${courseIndex}" required></td>
+        <td><input type="number" name="enrolled_previous_${courseIndex}" required></td>
+        <td><input type="number" name="placed_previous_${courseIndex}" required></td>
+        <td><button type="button" class="removeRow">Remove</button></td>
+      `;
+      row.querySelector(".removeRow").addEventListener("click", function() {
+        table.deleteRow(row.rowIndex);
+      });
+      courseIndex++;
+    });
+
+    // Remove initial row button
+    document.querySelectorAll(".removeRow").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const row = btn.closest("tr");
+        row.parentNode.removeChild(row);
+      });
+    });
+
+    // Form submission
     document.getElementById("courseForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
-      const data = Object.fromEntries(formData.entries());
+      const dataObj = {};
 
+      // Collect institute and faculty info
+      ["institute_name","registered_address","affiliation","faculty_name","faculty_contact","faculty_email"].forEach(k => {
+        dataObj[k] = formData.get(k);
+      });
+
+      // Collect all courses
+      dataObj.courses = [];
+      for(let i = 0; i < courseIndex; i++){
+        if(formData.get(`course_${i}`)){
+          dataObj.courses.push({
+            course: formData.get(`course_${i}`),
+            seats: formData.get(`seats_${i}`),
+            enrolled_current: formData.get(`enrolled_current_${i}`),
+            enrolled_previous: formData.get(`enrolled_previous_${i}`),
+            placed_previous: formData.get(`placed_previous_${i}`)
+          });
+        }
+      }
+
+      // Send to Apps Script
       fetch(scriptURL, {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(dataObj),
+        headers: {"Content-Type": "application/json"}
       })
       .then(res => res.text())
       .then(msg => document.getElementById("response").innerText = msg)
